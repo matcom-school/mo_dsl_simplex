@@ -257,6 +257,15 @@ class LinealOptimizationProblem:
     @property
     def result_vector(self):
         return np.array([v for _, v in self.b])
+    
+    def list_var_index_by(self, base= []):
+        index = 0
+        for i in range(len(self.Ax[0])):
+            if not i in base: 
+                yield (True, i, index)
+                index += 1
+            else:
+                yield (False, i, index)
 
 def format_componet(look=False):
     return XVar(), Formatter(print)

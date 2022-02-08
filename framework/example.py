@@ -21,22 +21,17 @@ eq.s_a = (
 
 stand_eq = mo.get_stand_form(eq, look=True)
 base  = mo.get_base_of(stand_eq.Ax)
-xb, xr, B, R = mo.explicit_descompose(stand_eq, base)
+ctb, ctr, B, R = mo.explicit_descompose(stand_eq, base)
 
-# y0 = np.linalg.inv(B).dot(stand_eq.result_vector)
-# print(y0)
-# print(B.dot(R))
-# # this not now if has logic ???
-# xb, xr, B, R = mo.get_explicit_var(Ax_stand, index_base = [])
-# y0 = mo.inverse(B) * b
-# Ax_B_explicit = xb + mo.inverse(B) * R * xr
-# cambiar todos los valores a un obj con .value y mult override para mejorer las operaciones en el dsl
+y0 = mo.inverse_matrix(B) * stand_eq.result_vector
+ztr = ctb * mo.inverse_matrix(B) * R
+rj = [(ctr[ir] - ztr[ir]) if index_in_base else 0 for index_in_base, _, ir in stand_eq.list_var_index_by(base) ]
 
 
-# crear una interface de Simplex
-# chequear primal factible 
-# chequear condición de optimalidad
-# buscar columna de entrada
+simplex_to_eq = mo.simplex_build(base, ctb, ctr, B, R, y0, rj)
+
+
+
 # buscar columna de salida
 # realizar cambie de dos columnas
 # realizar cortes  

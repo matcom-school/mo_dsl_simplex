@@ -1,8 +1,6 @@
-from operator import index
 import numpy as np
-from scipy.linalg import lu
-
-
+from .simplex import Simplex 
+# from scipy.linalg import lu
 
 # print(A)
 # # A = np.array([[1,2,3], [2,4,2]])
@@ -40,4 +38,63 @@ def explicit_descompose(pol, base):
         B.append([v for i, v in enumerate(row) if i in base])
         R.append([v for i, v in enumerate(row) if not i in base])
     
-    return xb, xr, np.array(B), np.array(R)
+    return Operator(xb), Operator(xr), Operator(np.array(B)), Operator(np.array(R))
+
+
+def try_value(obj):
+    try:
+        return obj.value
+    except AttributeError:
+        return obj
+        
+class Operator:
+    def __init__(self, value) -> None:
+        self.value = value
+    
+    def __rmul__(self, other):
+        return Operator(self.value.dot(try_value(other)))
+    
+    def __mul__(self, other):
+        return Operator(self.value.dot(try_value(other)))
+        
+    def __add__(self, other): 
+        return Operator(self.value + (try_value(other)))
+        
+
+    def __radd__(self, other): 
+        return Operator(self.value + try_value(other))
+
+    def __str__(self) -> str:
+        return str(self.value)
+
+    def __getitem__(self, index):
+        return self.value[index]
+
+def inverse_matrix(m):
+    return Operator(np.linalg.inv(try_value(m)))
+
+def simplex_build(base, ctb, ctr, B, R, y0, rj) -> None:
+    self_ctb = try_value(ctb)
+    self_ctr = try_value(ctr)
+    self_B = try_value(B)
+    self_R = try_value(R)
+    self_y0 = try_value(y0)
+    self_rj = try_value(rj)
+    self_Ax = [[] for _ in base]
+    self_ctx = []
+
+    b_index = 0
+    r_index = 0
+    for i in range(len(rj)):
+        if i in base:
+            self_ctx.append(self_ctb[b_index])
+            for j, row in enumerate(self_B):
+                self_Ax[j].append(row[b_index])
+            b_index += 1
+        else:
+            self_ctx.append(self_ctr[r_index])
+            for j, row in enumerate(self_R):
+                self_Ax[j].append(row[r_index])
+            r_index += 1
+    return Simplex(base, self_ctx, self_Ax, self_y0, self_rj)
+
