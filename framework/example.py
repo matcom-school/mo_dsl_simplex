@@ -30,10 +30,19 @@ rj = [(ctr[ir] - ztr[ir]) if index_in_base else 0 for index_in_base, _, ir in st
 
 simplex_to_eq = mo.simplex_build(base, ctb, ctr, B, R, y0, rj)
 
+while mo.check_optimal_condition(simplex_to_eq):
+    aq = mo.find_input_column(simplex_to_eq)
+    ap = mo.find_swap_column_to(aq, simplex_to_eq, _min = lambda yio, yiq: yio/yiq if yiq > 0 else None)
+    if ap is None: 
+        print("Problema no acotado") 
+        break
+
+    ypq = simplex_to_eq.Ax[ap][aq]
+    simplex_to_eq = mo.swap_column_base(aq, ap, simplex_to_eq, 
+        formule= lambda i, j, yij, yiq, ypj: ypj/ypq if i == ap else yij - yiq * ypj / ypq)
 
 
-# buscar columna de salida
-# realizar cambie de dos columnas
+print("Final result: ", mo.get_solution(simplex_to_eq))
+
 # realizar cortes  
-
 # DualSimplex y Doble Fase ??????
