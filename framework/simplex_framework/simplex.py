@@ -13,9 +13,9 @@ class Simplex:
 
 def check_optimal_condition(simplex):
     for rj in simplex.rj:
-        if rj < 0: return False
+        if rj < 0: return True
     
-    return True
+    return False
 
 def check_primal_feasible(simplex):
     for y0 in simplex.y0:
@@ -39,8 +39,7 @@ def find_swap_column_to(q, simplex, _min):
     resultList = [(i, _min(simplex.Ax[i][q], simplex.y0[i])) for i in range(len(simplex.base)) ]
     resultList = [item for item in  resultList if not item[1] is None]
 
-    if not any(resultList): return None 
-    print(resultList) 
+    if not any(resultList): return None  
     resultList.sort(key= lambda x: x[1])
     return resultList[0][0]
  
@@ -54,21 +53,28 @@ def swap_column_base(q, p, simplex, formule):
     
     new_y0 = []
     for i, item in enumerate(simplex.y0):
-        new_y0.append(formule(i, len(simplex.Ax[0], item, simplex.Ax[i][q], simplex.y0[p])))
+        new_y0.append(formule(i, len(simplex.Ax[0]), item, simplex.Ax[i][q], simplex.y0[p]))
     
     new_rj = []
     for j, item in enumerate(simplex.rj):
         new_rj.append(formule(len(simplex.Ax), j, item, simplex.rj[q], simplex.Ax[p][j]))
     
-    simplex.base.remove(p)
-    simplex.base.append(q)
+    simplex.base[(p)]=q
     return Simplex(simplex.base, simplex.ctx, new_matrix, new_y0, new_rj)
+
 
 def get_solution(simplex):
     result = [ 0 ] * len(simplex.Ax[0])
-    for j in simplex.base:
+    for j in range(len(simplex.base)):
         for row in simplex.Ax:
-            if row[j] != 0:
-                result[j] = row[j] * simplex.y0[j]
+            if row[simplex.base[j]] != 0:
+                result[simplex.base[j]] = 1 * simplex.y0[j]
 
-    return result
+    return result , evaluate(result,simplex)
+
+def evaluate (result,simplex):
+    z = 0
+    for i in range(len(simplex.ctx)):
+        z = z + simplex.ctx[i] * result[i]
+
+    return z    

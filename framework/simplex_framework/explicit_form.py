@@ -1,3 +1,4 @@
+from select import select
 import numpy as np
 from .simplex import Simplex 
 # from scipy.linalg import lu
@@ -28,6 +29,69 @@ def get_base_of(matrix):
 
         if  not det == 0: return indexes 
     return []
+
+#da una base canonica
+#idea busca la transpuesta , selecciona los vectores canonicos y mira que sean li y generen todo el espacio
+def get_cannon_bas(matrix):
+    transp = np.transpose(matrix)
+    cannon = []
+    base = []
+    for i in range(len(transp)):
+        if iscannon_vector(transp[i]):
+            if(not (contain(cannon,transp[i]))):
+                base.append(i)
+                cannon.append(transp[i])
+
+    if(len(base) == len(matrix)):
+        return base        
+
+def contain(matrix ,vector):
+    for elemnt in matrix:
+        for i in range(len(elemnt)):
+            if (not(vector[i]== elemnt[i])):
+                continue
+            return True
+
+    return False               
+
+def iscannon_vector (vector):
+    uno = False
+    for i in vector:
+        if(i==1 and not uno):
+            uno = True
+            continue   
+        if(i==1 and uno) :
+                return False
+
+        if (not (i==0)):
+            return False
+    return True and uno
+
+#no utilizado 
+def iscannon_Matrix(Matrix):
+    uno =False
+    sect = []
+    for fila in Matrix:
+        uno=False
+        for i in range(len(fila)):
+            if(fila[i]==1 and not uno):
+                sect.append(i)
+                uno=True
+                continue
+            if(fila[i]==1 and uno) :
+                return False
+
+            if (not (fila[i]==0)):
+                return False
+
+    for i in range(len(Matrix[0])) :
+        if not (i in sect)  :
+            return False                
+
+
+    return True
+
+
 
 def explicit_descompose(pol, base):
     xb = np.array([v for i, v in enumerate(pol.ctx) if i in base])
