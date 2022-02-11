@@ -44,5 +44,8 @@ while mo.check_optimal_condition(simplex_to_eq):
 
 print("Final result: ", mo.get_solution(simplex_to_eq))
 
+# probar lo que hay
+# leer dualSimplex y Doble fase y cortes 
+# buscar columnas canonicas y annadir las faltantes y devolver la base
 # realizar cortes  
 # DualSimplex y Doble Fase ??????

@@ -16,10 +16,28 @@ def get_all_sub_set_with(elementAccount):
         result.append([i for i in range(elementAccount) if 1 << i & n != 0])
 
     return result
-def get_base_of(matrix):
+
+def find_canonic_base(matrix):
+    result = []
+    for j in range(len(matrix[0])):
+        column = 0
+        for row in matrix:
+            column = column | row[j]
+        if column == 1: result.append(j)
+
+    return result
+    
+def sub_set(subbase, base):
+    for i in subbase:
+        if not i in base: return False
+    
+    return True
+
+def get_base_of(matrix, subbase):
+    if len(subbase) == len(matrix): return subbase
     all_sub_set = get_all_sub_set_with(len(matrix[0]))
 
-    for indexes in [l for l  in all_sub_set if len(l) == len(matrix)]:
+    for indexes in [l for l  in all_sub_set if len(l) == len(matrix) and sub_set(subbase, l)]:
         newMatrix = []
         for  row in matrix:
             newMatrix.append([v for i, v in enumerate(row) if i in indexes])

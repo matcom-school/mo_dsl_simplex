@@ -10,6 +10,14 @@ class Simplex:
         self.y0 = y0
         self.rj = rj
 
+    @property
+    def solution(self):
+        result = 0
+        for i, j in enumerate(self.base):
+            result += self.ctx[j] * self.y0[i]
+        
+        return result
+
 
 def check_optimal_condition(simplex):
     for rj in simplex.rj:
