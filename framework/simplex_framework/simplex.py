@@ -13,9 +13,9 @@ class Simplex:
 
 def check_optimal_condition(simplex):
     for rj in simplex.rj:
-        if rj < 0: return True
+        if rj < 0: return False
     
-    return False
+    return True
 
 def check_primal_feasible(simplex):
     for y0 in simplex.y0:
