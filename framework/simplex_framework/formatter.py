@@ -1,5 +1,8 @@
+from unittest import result
 from .prettier_print import prettier, pprint
 import numpy as np
+from simplex_framework.prettier_print import print_number
+
 
 class XVar:
     def __getitem__(self, index):
@@ -266,6 +269,22 @@ class LinealOptimizationProblem:
                 index += 1
             else:
                 yield (False, i, index)
+    
+    def __str__(self) -> str:
+        result = self.verb
+        real_str = lambda x, i, sing: f'{sing} { print_number(x)}x{i} ' if x >= 0 else f' {print_number(x)}x{i} '
+
+        for i, item in enumerate(self.ctx):
+            result += real_str(item, i, '+' if i > 1 else '')
+        
+        result += '\n'
+        for j, row in enumerate(self.Ax):
+            for i, item in enumerate(row):
+                result += real_str(item, i, '+' if i > 0 else '')
+            result += f'{self.b[j][0]} {print_number(self.b[j][1])}\n'
+        
+        return result
+
 
 def format_componet(look=False):
     return XVar(), Formatter(print)
@@ -288,10 +307,11 @@ def get_stand_form(pol: LinealOptimizationProblem, func = stand_form_func):
     
     for i, val in enumerate(pol.b):
         simbol, result = val
+        if simbol == EQUAL: continue
+        
         add_column(rAx)
         rctx.append(0)
         func(rAx[i], simbol)
-
     return LinealOptimizationProblem('min', rctx, rAx, rb)
 
     

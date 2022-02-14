@@ -31,3 +31,8 @@ def pprint(pol):
         result += f' {pol.b[i][0]} {pol.b[i][1]}\n'
 
     print(result)
+
+def print_number(n):
+    if n == 0: return '  0.0000'
+    elif n < 0: return ' %02.4f'%n
+    else: return '  %02.4f'%n

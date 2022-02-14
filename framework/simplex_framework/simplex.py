@@ -1,6 +1,7 @@
 from typing import List
 from unittest import result
 import numpy as np
+from simplex_framework.prettier_print import print_number
 
 class Simplex:
     def __init__(self, base, ctx, Ax, y0, rj) -> None:
@@ -9,6 +10,24 @@ class Simplex:
         self.Ax = np.array(Ax)
         self.y0 = y0
         self.rj = rj
+
+    def __str__(self) -> str:
+        result = f'actual base: {self.base}\n'
+        result += print_list(self.ctx) + ' |\n'
+        for i, row in enumerate(self.Ax):
+            result += print_list(row) + f' | {print_number(self.y0[i])}\n'
+
+        return result + print_list(self.rj) + f' | {print_number(get_solution(self)[1])}\n'
+
+
+
+def print_list(listt):
+    result = ''
+    for i,n in enumerate(listt):
+        result += print_number(n) 
+        if i == len(listt): continue
+        result += ','
+    return result
 
 
 def check_optimal_condition(simplex):
@@ -78,3 +97,20 @@ def evaluate (result,simplex):
         z = z + simplex.ctx[i] * result[i]
 
     return z    
+
+def try_delete_column(index, simplex):
+    print("try delete", index)
+    if not index in simplex.base:
+        simplex.ctx.pop(index)
+        new_matrix = []
+        for row in simplex.Ax:
+            try:
+                row.pop(index)
+                new_matrix.append(row)
+            except AttributeError:
+                new_matrix.append(np.delete(row, index))
+
+
+        simplex.rj.pop(index)
+        simplex.Ax = np.array(new_matrix)
+    return simplex

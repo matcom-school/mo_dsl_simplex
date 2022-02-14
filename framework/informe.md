@@ -120,9 +120,10 @@ canonical_columns = mo.get_canonical_columns(pol) # retorna una lista de indices
 is_base = mo.is_base(canonical_columns, pol) # predicado afirmativo si las columnas de la lista son una base de Ax
 base = mo.get_base(pol, canonical_columns) # completa una base de Ax que contenga los vectores de la lista
                                            # del segundo argumento, este es opcional y por default = []
-pol_to_firts_fase = mo.complet_canonical_base(pol, canonical_columns) # crea un nuevo problema al que se le agregan
-                                                                      # vectores canónicos que faltaban en el problema
-                                                                      # inicial
+pol_to_firts_fase, base = mo.complet_canonical_base(pol, canonical_columns)
+# crea un nuevo problema al que se le agregan
+# vectores canónicos que faltaban en el problema inicial
+# además retorna la base canonica completada
 ```
 
 Una vez seleccionada la base con la que se comenzará el algoritmo, independiente de la bifurcación
