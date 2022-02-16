@@ -19,7 +19,13 @@ class Simplex:
 
         return result + print_list(self.rj) + f' | {print_number(get_solution(self)[1])}\n'
 
-
+    @property
+    def solution(self):
+        result = 0
+        for i, j in enumerate(self.base):
+            result += self.ctx[j] * self.y0[i]
+        
+        return result
 
 def print_list(listt):
     result = ''
@@ -28,7 +34,6 @@ def print_list(listt):
         if i == len(listt): continue
         result += ','
     return result
-
 
 def check_optimal_condition(simplex):
     for rj in simplex.rj:
