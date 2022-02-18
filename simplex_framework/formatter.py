@@ -1,4 +1,6 @@
 from unittest import result
+
+from simplex_framework.sale import check_sale
 from .prettier_print import prettier, pprint
 import numpy as np
 from simplex_framework.prettier_print import print_number
@@ -285,7 +287,7 @@ class LinealOptimizationProblem:
         
         return result
 
-
+@check_sale
 def format_componet(look=False):
     return XVar(), Formatter(print)
  
@@ -299,6 +301,7 @@ def stand_form_func(row, simbol):
     elif simbol in [LOWER, LOWER_EQUAL]: row[-1] = 1
 
 @prettier
+@check_sale
 def get_stand_form(pol: LinealOptimizationProblem, func = stand_form_func):
     rctx, rAx, rb = pol.ctx, pol.Ax.copy(), [(EQUAL, val) for s, val in pol.b]
 

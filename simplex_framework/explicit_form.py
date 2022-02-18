@@ -1,11 +1,7 @@
-from select import select
-from unittest import result
 import numpy as np
-from pyparsing import java_style_comment
-
 from simplex_framework.formatter import LinealOptimizationProblem
 from .simplex import Simplex 
-# from scipy.linalg import lu
+from .sale import check_sale
 
 # print(A)
 # # A = np.array([[1,2,3], [2,4,2]])
@@ -22,6 +18,7 @@ def get_all_sub_set_with(elementAccount):
 
     return result
 
+@check_sale
 def get_base_of(pol, sub_base):
     all_sub_set = get_all_sub_set_with(len(pol.Ax[0]))
 
@@ -36,6 +33,7 @@ def get_base_of(pol, sub_base):
 
     return []
 
+@check_sale
 def not_negative_base_vectors(pol, base):
     new_matrix, new_b = [], []
 
@@ -52,6 +50,7 @@ def not_negative_base_vectors(pol, base):
 
     return LinealOptimizationProblem(pol.verb, pol.ctx, new_matrix, new_b)
 
+@check_sale
 def get_canonical_columns(pol):
     matrix = pol.Ax
     vectors = {}
@@ -60,7 +59,9 @@ def get_canonical_columns(pol):
         resultSum = 0
         index = -1
         for i, row  in enumerate(matrix):
-            resultOr |= abs(row[j])
+
+            try: resultOr |= abs(row[j])
+            except TypeError: resultOr |= 100
             resultSum += abs(row[j])
             index = i if abs(row[j]) == 1 else index
       
@@ -69,6 +70,8 @@ def get_canonical_columns(pol):
     
     return [val for val in vectors.values()]
 
+
+@check_sale
 def is_base(indexes, pol):
     if len(indexes) != len(pol.Ax): return False
 
@@ -80,6 +83,7 @@ def is_base(indexes, pol):
 
     return not det == 0 
 
+@check_sale
 def completed_canonical_base(pol, canonical_columns):
     vector = []
     ctx = [0] * len(pol.ctx)
@@ -97,33 +101,7 @@ def completed_canonical_base(pol, canonical_columns):
     pol.ctx = ctx
     return pol, canonical_columns
 
-
-#no utilizado 
-def iscannon_Matrix(Matrix):
-    uno =False
-    sect = []
-    for fila in Matrix:
-        uno=False
-        for i in range(len(fila)):
-            if(fila[i]==1 and not uno):
-                sect.append(i)
-                uno=True
-                continue
-            if(fila[i]==1 and uno) :
-                return False
-
-            if (not (fila[i]==0)):
-                return False
-
-    for i in range(len(Matrix[0])) :
-        if not (i in sect)  :
-            return False                
-
-
-    return True
-
-
-
+@check_sale
 def explicit_descompose(pol, base):
     xb = np.array([v for i, v in enumerate(pol.ctx) if i in base])
     xr = np.array([v for i, v in enumerate(pol.ctx) if not i in base])
@@ -165,9 +143,11 @@ class Operator:
     def __getitem__(self, index):
         return self.value[index]
 
+@check_sale
 def inverse_matrix(m):
     return Operator(np.linalg.inv(try_value(m)))
 
+@check_sale
 def simplex_build(base, ctb, ctr, B, R, y0, rj) -> None:
     self_ctb = try_value(ctb)
     self_ctr = try_value(ctr)

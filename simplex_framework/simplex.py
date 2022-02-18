@@ -2,6 +2,7 @@ from typing import List
 from unittest import result
 import numpy as np
 from simplex_framework.prettier_print import print_number
+from simplex_framework.sale import check_sale
 
 class Simplex:
     def __init__(self, base, ctx, Ax, y0, rj) -> None:
@@ -35,18 +36,21 @@ def print_list(listt):
         result += ','
     return result
 
+@check_sale
 def check_optimal_condition(simplex):
     for rj in simplex.rj:
         if rj < 0: return False
     
     return True
 
+@check_sale
 def check_primal_feasible(simplex):
     for y0 in simplex.y0:
         if y0 < 0: return False
 
     return True
 
+@check_sale
 def find_input_column(simplex):
     result = []
     for i, rj in enumerate(simplex.rj):
@@ -58,6 +62,7 @@ def find_input_column(simplex):
     result.sort()
     return result[0][1] 
 
+@check_sale
 def find_swap_column_to(q, simplex, _min):
     if q is None: return None
     resultList = [(i, _min(simplex.Ax[i][q], simplex.y0[i])) for i in range(len(simplex.base)) ]
@@ -67,7 +72,7 @@ def find_swap_column_to(q, simplex, _min):
     resultList.sort(key= lambda x: x[1])
     return resultList[0][0]
  
-
+@check_sale
 def swap_column_base(q, p, simplex, formule):
     new_matrix = [[] for _ in range(len(simplex.base))]
 
@@ -86,7 +91,7 @@ def swap_column_base(q, p, simplex, formule):
     simplex.base[(p)]=q
     return Simplex(simplex.base, simplex.ctx, new_matrix, new_y0, new_rj)
 
-
+@check_sale
 def get_solution(simplex):
     result = [ 0 ] * len(simplex.Ax[0])
     for j in range(len(simplex.base)):
@@ -103,6 +108,7 @@ def evaluate (result,simplex):
 
     return z    
 
+@check_sale
 def try_delete_column(index, simplex):
     print("try delete", index)
     if not index in simplex.base:
