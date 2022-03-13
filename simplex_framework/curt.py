@@ -1,5 +1,5 @@
 import numpy as np
-from simplex_framework.explicit_form import get_base_of
+from simplex_framework.explicit_form import get_base_of, get_canonical_columns
 from simplex_framework.sale import check_sale
 
 @check_sale
@@ -28,10 +28,10 @@ def plane_cut_row_selection(simplex, formule):
 def real_row(i, simplex):
     if i == len(simplex.Ax):
         return simplex.rj + [simplex.solution]
-    
-    return simplex.Ax[i] + [simplex.y0[i]]
+    return [item for item in simplex.Ax[i]] + [simplex.y0[i]]
 
 def real_value(i, j, simplex):
+
     return real_row(i, simplex)[j]
 
 @check_sale
@@ -50,7 +50,7 @@ def cut_plane(simplex, i, formule ,*not_z_index):
     return result, '>=', fio
 
 @check_sale
-def cut_plane_z(simplex, r  ):
+def cut_plane_z(simplex, r):
     rk = min([ rj for rj in simplex.rj if not rj == 0 ])
     row = real_row(r, simplex)
     Rr = [ i  for i in range(len(row) - 1) if row[i] < 0]
@@ -79,11 +79,23 @@ def cut_primal_z(simplex, k):
 
 @check_sale
 def include_row(simplex, row, simbol, result):
-    if simbol in ['<=', '<']:
+    if simbol in ['>=', '>']:
         result = result * -1
         row = np.array(row) * -1
 
-    simplex.Ax.append(row)
+    row = [item for  item in row ] + [1]
+
+    simplex.ctx.append(0)
+    simplex.Ax = np.array([[item for item in row] + [0] for row in simplex.Ax] + [row])
     simplex.y0.append(result)
-    simplex.base = get_base_of(simplex.Ax, find_canonic_base(simplex.Ax))
+    simplex.rj.append(0)
+    simplex.base.append(len(simplex.ctx) - 1)
     return simplex
+
+
+@check_sale
+def all_in_Z(_list):
+    for item in _list:
+        if item - int(item) > 0.00001 or item < 0: return False
+    
+    return True

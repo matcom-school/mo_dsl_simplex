@@ -19,7 +19,6 @@ def is_dual_faceable(simplex):
 # lambda rj, ypj : -rj/ypj
 @check_sale
 def dual_find_input_column(p, simplex, _min):
-    print(p)
     if p is None: return None
     file_p = simplex.base.index(p)
     result = []
@@ -31,7 +30,6 @@ def dual_find_input_column(p, simplex, _min):
 
     if not any(result): return None
     result.sort()
-    print(result)
     return result[0][1]
 
 @check_sale
